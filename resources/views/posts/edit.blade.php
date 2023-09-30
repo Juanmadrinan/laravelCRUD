@@ -1,7 +1,8 @@
-<x-app title="blog" meta-description="Blog meta description">
-    <h1 class="my-4 font-serif text-3xl text-center text-sky-600 dark:text-sky-500">Create new post</h1>
-    <form class="max-w-xl px-8 py-4 mx-auto bg-white rounded shadow dark:bg-slate-800" action="{{ route('posts.store') }}" method="POST">
-    @csrf
+<x-app :title="$post->title" :meta-description="$post->body">
+    <h1 class="my-4 font-serif text-3xl text-center text-sky-600 dark:text-sky-500">Edit form</h1>
+    <form class="max-w-xl px-8 py-4 mx-auto bg-white rounded shadow dark:bg-slate-800" action="{{ route('posts.update', $post) }}" method="POST">
+    @csrf @method('PATCH')
+
     @include('posts.form-fields')
         <div class="flex items-center justify-between mt-4">
             <a class="text-sm font-semibold underline border-2 border-transparent rounded dark:text-slate-300 text-slate-600 focus:border-slate-500 focus:outline-none" href="{{ route('posts.index') }}">Regresar</a>

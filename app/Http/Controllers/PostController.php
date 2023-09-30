@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SavePostRequest;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
 {
+    public function __construct(){
+        $this->middleware('auth', ['except' => ['index', 'show']]);
+    }
     public function index(){
         $posts = Post::get();
         return view('posts.index', ['posts' => $posts]);
@@ -18,23 +22,26 @@ class PostController extends Controller
     }
 
     public function create(){
-        return view('posts.create');
+        return view('posts.create', ['post' => new Post()]);
     }
 
-    public function store(Request $request){
-        $request->validate([
-            'title' => ['required', 'min:4'],
-            'body' => ['required'],
+    public function store(SavePostRequest $request){
+        Post::create ($request->validated());
+        return to_route('posts.index')->with('status', 'Post Created!');
+    }
 
-        ]);
+    public function edit(Post $post){
+        return view('posts.edit', ['post' => $post]);
+    }
 
-        $post = new Post();
-        $post->title = $request->input('title');
-        $post->body = $request->input('body');
-        $post->save();
+    public function update(SavePostRequest $request, Post $post){
 
-        session()->flash('status', 'Post created!');
+        $post->update($request->validated());
+        return to_route('posts.show', $post)->with('status', 'Post Update!');
+    }
 
-        return to_route('posts.index');
+    public function destroy(Post $post){
+        $post->delete();
+        return to_route('posts.index', $post)->with('status', 'Post Delete!');
     }
 }
